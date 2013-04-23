@@ -1,20 +1,33 @@
-
+#ifdef __cplusplus
+extern "C" {
+#endif
 #include <stdio.h>
-#include <conio.h>
-#include<string.h>
+#include <string.h>
 #include <stdlib.h>
-#define koll_l_na_et 10
-#define kol_et 3
+#define input_buf_size 80
 #define SIZE( x ) (sizeof( x )/sizeof( *x ))
+#define max_num_host 15
+#define number_of_floors 2
+#define max_num_floor 5
 
-struct zasel{
+
+typedef struct settled{
 	char name[20];
-	char floor[koll_l_na_et];}student;
-struct ochered{
+	char floor[max_num_floor];}student;
+
+typedef struct turn{
 	char name[20];
-	struct ochered*next;
-    int number_flor;}student;
+	struct turn*next;};
 	
+void clear_screen()
+{
+#ifdef _WIN32
+    system("cls");
+#else
+    system("clear");
+#endif
+}
+
 char*gets_s(char *s, size_t buf_size)
 {
     char *result;
@@ -23,86 +36,158 @@ char*gets_s(char *s, size_t buf_size)
     return result;
 }
 
-int add_list(int etash[kol_et],int kol_zas, zasel* students_list)
+int  moving_hostel(int floor[number_of_floors], int num_set_hostel,int current_floor,settled*students_list)
 {
-	int j;
-    students_list[kol_zas].floor=etash_koll(&etash[kol_et]);
-    printf("Vvedite svoy famoloy");
-    gets_s(students_list->name);	
-    kol_zas++;
-    etash[j]++;
-	return kol_zas,etash[j];
+	int name_size = SIZE(students_list[num_set_hostel].name);
+	int i;
+    for(i=0;i<number_of_floors;i++){floor[i]=0;}
+	for(current_floor = 0;current_floor < number_of_floors;current_floor ++){
+		if(floor[current_floor] < max_num_floor){
+			floor[current_floor] = floor[current_floor] + 1;
+            printf("Enter last name of students");
+	        gets_s(students_list[num_set_hostel].name,name_size);
+	        students_list[num_set_hostel].floor,&current_floor;}
+		break;}
+	return floor[current_floor];
 }
 
-ochered add_ocher(ochered**begin,ochered * student_list,int kol_chel_v_och)
+int choice_of_floor( int num_set_hostel)
 {
-	int name_size=SIZE(student_list->name);
-	kol_chel_v_och ++;
-    do{
-	if(!(*begin=(ochered *) calloc(1,sizeof(ochered)))) {
-		puts("Нет свободной памяти"); return;}
-	printf("Vvedite svoe FIO");
-	gets_s(student_list->name,name_size);
-	if(!*begin){
-		*begin=student_list;}
+	num_set_hostel ++ ;
+    return num_set_hostel;
+}
+
+void add_to_queue(turn**p,turn* student_list,int current_person_queue)
+{
+	int name_size= SIZE(student_list[current_person_queue].name);
+	turn * begin;
+	if(!(begin = (turn*)calloc(1,sizeof(turn)))){
+		puts("There is no free memory");return;}
+    puts("I'm sorry to the hostel not available, we will put you in a place to settle\n");
+	puts("please, repeat your last name\n");
+	gets_s(student_list[current_person_queue].name,name_size);
+	if(!*p){
+		*p = begin;}
 	else{
-		student_list->next=*begin;
-	    *begin=student_list;}
-	}while(getch()=='y');
-
+		begin->next = *p;
+		*p = begin;}
 }
 
-int etash_koll(int etash[kol_et])
+int removed_from_the_queue(turn **p)
 {
-	int i,j;
-	for(i=0;i<kol_et;i++){
-		if(etash[i]<10){
-			j=i;break;}}
-	return j;
+	turn*pr;
+	if(!*p){
+		return 0;}
+	if(!(*p)->next){
+		free(*p);
+		*p = NULL;
+		return 0;}
+	pr=*p;
+	while(pr->next->next)
+		pr= pr->next;
+	free(pr->next);
+	pr->next = NULL;
+	return 0;
 }
 
-int ydal_chel_is_ob(int kol_zas,int etash[j],zasel*students_list)
+int remove_from_the_living(int floor[number_of_floors],int num_set_hostel,settled* students_list,turn **p )
 {
 	int i;
-	int name_size=SIZE(students_list[kol_zas].name);
-	printf("Vvedite svoe FIO");
-	gets_s(students_list[kol_zas].name,name_size);
-	for(i=kol_zas;kol_zas!=0;i--){
-	if(strcmp(students_list[i].name,students_list[i-1].name))
-	{students_list[i].name=0;
-    kol_zas=kol_zas-1;
-	etash[j]--;
-	}
+	char*s=(char*)malloc(sizeof(int));
+	int s_size = SIZE(s);
+	printf("Enter last name of the student");
+	gets_s(s, s_size);
+	for(i = 0;i < num_set_hostel;i++){
+		if(students_list[i].name == s){
+			break;
+			students_list[i].name == 0;
+			floor[number_of_floors] = floor[number_of_floors]-1;
+			num_set_hostel --;}}
+	if(*p){
+		printf("Enter last name of students");
+		students_list[i].name,s;
+		num_set_hostel++;
+		floor[number_of_floors] = floor[number_of_floors]+1;}
+	return num_set_hostel;
 }
 
-void main(void)
+void list_of_living(settled* students_list,int num_set_hostel)
 {
-	int j=0;
- struct ochered *begin,*end;
- int kol_chel_v_och =0;
- int cvob_mest_et = koll_l_na_et*kol_et;
- int kol_zas = 0;
- struct zasel students_list[150];
- struct ochered student_list[150];
- int etash[kol_et];
- struct ochered *head;
- char l,*st;
- st=(char*)malloc(10);
- head=NULL;
- while(1){
-	 puts("If you want to live in a hostel- please press 1");
-	 puts("Esli vi hotite visilitsia - please press 2");
-	 puts("to exit- please press 0");
-	 fflush(stdin);
-	 switch(getch()){
-	 case'1':if(kol_zas==koll_l_na_et*kol_et)
-			 kol_chel_v_och= add_ocher(&begin, student_list, kol_chel_v_och); break;
-	         if(!kol_zas==koll_l_na_et*kol_et)
-			 {kol_zas,etash[j]=add_list(&etash[kol_et],kol_zas,students_list); break;}
-		  
-	 case'2': ydal_chel_is_ob(kol_zas,&etash[j], kol_chel_v_och,students_list); break;
-
-	 case'0':return;
-	 default:printf("error, continue\n");}
- }
+	int i;
+	for(i=0;i<num_set_hostel;i++){
+		printf("List of living:\n  ");
+	    printf("\n",students_list[i].name );}
 }
+
+int menu_select()
+{
+	char s[input_buf_size];
+    int c;
+    puts("1. If you want to live in a hostel");
+	puts("2. If you want to move out ");
+    puts("3. If you want to view the list of living in a hostel");
+    puts("4. Help"); 
+	puts("5. to exit");
+	do{
+		printf("\nEnter the number of the desired item\n");
+        gets_s(s, input_buf_size);
+        c = atoi(s);}
+    while (c < 0 || c > 5);
+    clear_screen();
+    return c;
+}
+
+void checkHelp(void)
+{
+     printf
+        ("=============================================================================================================\n"
+         "MANUAL:\n"
+         "Enter information about the students: last name, \n"
+         "=================================OPTIONS=====================================================================\n"
+         "1. If you want to live in a hostel\n"
+         "2. If you want to move out of the hostel\n"
+         "3. If you want to view a list of students living in a hostel\n"
+		 "4. Help\n"
+		 "5. Exit\n"
+         "=============================================================================================================\n");
+    exit(0);
+	
+}
+
+int main(int argc, char *argv[])
+{ 
+	int floor[number_of_floors];
+	int i;
+    for(i=0;i<number_of_floors;i++){
+		floor[i]=0;}
+	int num_set_hostel=0 ;
+    int current_floor=0;
+    int current_person_queue=0;
+    struct turn *p;
+    struct settled students_list[150];
+    struct turn student_list[150];
+    char choice;
+    while(1){
+	 choice = menu_select();
+	 switch (choice){
+	 case 1 :
+		 if(num_set_hostel < max_num_host){
+		 num_set_hostel = choice_of_floor( num_set_hostel);
+		 floor[current_floor] = moving_hostel( &floor[number_of_floors],  num_set_hostel, current_floor,students_list);break;}
+		 else{add_to_queue(&p,student_list, current_person_queue);}
+	 case 2:
+		 num_set_hostel = remove_from_the_living(&floor[number_of_floors], num_set_hostel,students_list,&p); 
+         removed_from_the_queue(&p);break;
+     case 3: 
+		 list_of_living(students_list,num_set_hostel);break;
+	 case 4:
+		 checkHelp();break;
+     case 5:
+		 exit(0);break;
+     }
+   }
+}
+
+#ifdef __cplusplus
+}
+#endif

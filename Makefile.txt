@@ -1,13 +1,4 @@
-OBJ = main.c
-CFLAGS = -Wall -std=c99
-
-all: bin
-
-bin: $(OBJ)
-gcc $(CFLAGS) $(OBJ) -o bin
-
-%.o : %.c
-gcc $(CFLAGS) -c $<
-
-clean:
-rm bin $(OBJ)
+cmake_minimum_required (VERSION 2.6)
+project (Main C)
+add_executable(main.c)
+set(CMAKE_C_FLAGS "-std=c99") 
