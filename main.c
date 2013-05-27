@@ -11,18 +11,19 @@ extern "C" {
 #define max_num_host 3
 #define number_of_floors 2
 #define max_num_floor 3
+#define num 20
 
     struct settled{
-        char name[20];
+        char name[num];
         char floor[max_num_floor];
     };
     struct queue{
-        char name[20];
+        char name[num];
         struct queue*next;
     };
 
     struct departure{
-        char name[20];
+        char name[num];
     };
 
 
@@ -197,7 +198,8 @@ extern "C" {
         struct departure stud_list[150];
         char choice;
         while(1){
-            choice = menu_select();switch (choice){
+            choice = menu_select();
+            switch (choice){
             case 1 :
                 if(num_set_hostel  < max_num_host){
                     num_set_hostel = choice_of_floor( num_set_hostel);
