@@ -5,7 +5,6 @@ extern "C" {
 #include <string.h>
 #include <stdlib.h>
 #include <stdlib.h> 
-#include <conio.h>
 #define input_buf_size 80
 #define SIZE( x ) (sizeof( x )/sizeof( *x ))
 #define max_num_host 3
@@ -13,7 +12,7 @@ extern "C" {
 #define max_num_floor 3
 #define num 20
 
-    struct settled{
+    struct settled {
         char name[num];
         char floor[max_num_floor];
     };
@@ -22,19 +21,9 @@ extern "C" {
         struct queue*next;
     };
 
-    struct departure{
+    struct departure {
         char name[num];
     };
-
-
-    void clear_screen()
-    {
-#ifdef _WIN32
-        system("cls");
-#else
-        system("clear");
-#endif
-    }
 
     char*gets_s(char *s, size_t buf_size)
     {
@@ -47,15 +36,15 @@ extern "C" {
     int removed_from_the_queue(struct queue **tail)
     {
         struct queue*pr;
-        if(!*tail){
+        if(!*tail) {
             return 0;
         }
-        if(!((*tail)->next)){
+        if(!((*tail)-> next)) {
             free(*tail);
             tail = NULL;
             return 0;
         }
-        pr=*tail;
+        pr = *tail;
         while(pr->next->next)
             pr= pr->next;
         free(pr->next);
@@ -63,42 +52,63 @@ extern "C" {
         return 0;
     }
 
-    int remove_from_the_living(int* floor,int num_set_hostel,struct settled* students_list,struct queue **tail,struct departure* stud_list,int kol_departure)
+    int chek_1(int* floor, int num_set_hostel, struct departure* stud_list, int kol_departure, struct settled* students_list)
+    {
+        int i;
+        for(i = 1; i < num_set_hostel + 1; i++) {
+            if(strcmp(students_list[i].name,stud_list[kol_departure].name) == 0) {
+                floor[number_of_floors] = floor[number_of_floors]-1;
+                num_set_hostel --;
+                puts("  The man was successfully evicted by out of the hostel\n");
+                return 0;
+            }
+        }
+        return 1;
+    }
+
+    int  chek_2(int* floor, int num_set_hostel, struct departure* stud_list, int kol_departure, struct settled* students_list, struct queue ***tail)
     {
         int i;
         int name_size = SIZE(stud_list[kol_departure].name);
-        printf("Enter surname of the student ");
-        gets_s(stud_list[kol_departure].name,name_size);
-        for(i = 1;i < num_set_hostel+1;i++){
-            if(strcmp(students_list[i].name,stud_list[kol_departure].name) == 0){
-                floor[number_of_floors] = floor[number_of_floors]-1;
-                num_set_hostel --;
-                puts("the man was successfully evicted by out of the hostel");
-                break;
-            }
-            if(!strcmp(students_list[i].name,stud_list[kol_departure].name) == 0){
-                printf("student with that name does not live here,try again\n");
+        for(i = 1; i < num_set_hostel + 1; i++) {
+            if(!strcmp(students_list[i].name,stud_list[kol_departure].name) == 0) {
+                printf("  Student with that name does not live here,try again\n");
                 gets_s(stud_list[kol_departure].name,name_size);
             }
         }
-        if(*tail){
+        if(*tail) {
             num_set_hostel++;
-            puts("the hostel freed one place\n");
-            printf("please, repeat your surname,\n");
+            puts("  The hostel freed one place\n");
+            printf("  Please, repeat your surname,\n");
             gets_s(students_list[i].name,name_size);
         }
         return num_set_hostel;
     }
 
-    void list_of_living(struct settled* students_list,int num_set_hostel)
+    int remove_from_the_living(int* floor, int num_set_hostel, struct settled* students_list, struct queue **tail, struct departure* stud_list, int kol_departure)
+    {
+        if(num_set_hostel == 0) {
+            printf("The hostel has no one lives\n\n"); 
+            return 0;
+        }
+        int name_size = SIZE(stud_list[kol_departure].name);
+        printf("Enter surname of the student ");
+        gets_s(stud_list[kol_departure].name,name_size);
+        if( chek_1( floor, num_set_hostel, stud_list, kol_departure,students_list) == !0) {
+            num_set_hostel = chek_2(floor, num_set_hostel, stud_list,kol_departure, students_list,&tail);
+        }
+        return num_set_hostel;
+    }
+
+    void list_of_living(struct settled* students_list, int num_set_hostel)
     {
         int i;
-        if(num_set_hostel == 0){
-            printf("the hostel has no one lives"); 
+        if(num_set_hostel == 0) {
+            printf("The hostel has no one lives\n\n"); 
         }
         else{
             printf("List of living:\n ");
-            for(i = 1;i < num_set_hostel+1;i++){
+            for(i = 1; i < num_set_hostel + 1; i++) {
                 printf("%s\n",students_list[i].name );
             }
         }
@@ -119,7 +129,6 @@ extern "C" {
             c = atoi(s);
         }
         while (c < 0 || c > 5);
-        clear_screen();
         return c;
     }
 
@@ -144,13 +153,13 @@ extern "C" {
     {
         struct queue * n;
         int name_size= SIZE(n->name);
-        if(!(n = (queue*)calloc(1,sizeof(queue)))){
+        if(!(n = (queue*)calloc(1,sizeof(queue)))) {
             puts("There is no free memory");return;
         }
         puts("I'm sorry to the hostel not available, we will put you in a place to settle\n");
         puts("Enter  surname of student\n");
         gets_s(n->name,name_size);
-        if(!*tail){
+        if(!*tail) {
             *tail = n ;
         }
         else{
@@ -166,7 +175,7 @@ extern "C" {
     int  moving_hostel(int* floor, int num_set_hostel,int current_floor,struct settled* students_list)
     {
         int name_size = SIZE(students_list[num_set_hostel].name);
-        if(floor[current_floor] < max_num_floor){
+        if(floor[current_floor] < max_num_floor) {
             floor[current_floor] = floor[current_floor] + 1;
             printf("Enter surname of students ");
             gets_s(students_list[num_set_hostel].name,name_size);
@@ -187,7 +196,7 @@ extern "C" {
     void main()
     {
         int kol_departure = 0;
-        int current_floor=0;	
+        int current_floor=0;    
         int floor[number_of_floors] = {0,0};
         int num_set_hostel = 0 ;
         int current_person_queue = 0;
@@ -210,9 +219,14 @@ extern "C" {
                     add_to_queue(&tail,student_list, current_person_queue);break;
                 }
             case 2:
-                kol_departure ++;
-                num_set_hostel = remove_from_the_living(floor, num_set_hostel,students_list,&tail, stud_list,kol_departure ); 
-                removed_from_the_queue(&tail);break;
+                if(num_set_hostel != 0) {
+                    kol_departure ++;
+                }
+                num_set_hostel = remove_from_the_living(floor, num_set_hostel,students_list,&tail,
+                    stud_list,kol_departure );
+                if(num_set_hostel != 0) {
+                    removed_from_the_queue(&tail);
+                }break;
             case 3: 
                 list_of_living(students_list,num_set_hostel);break;
             case 4:
